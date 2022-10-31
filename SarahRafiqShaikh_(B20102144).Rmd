@@ -1,0 +1,379 @@
+---
+title: "Lab Assignment"
+author: "Sarah Rafiq Shaikh"
+date: "1/24/2022"
+output: word_document
+---
+##Selecting and Viewing a dataset
+
+
+#Viewing all the built-in data sets in R and Selecting one of them
+data()
+
+#Loading , My data set is a small dataset which is about The Effect of Vitamin C on Tooth Growth in Guinea Pigs
+data("ToothGrowth") 
+
+# names of the variables used in the data set that is len , supp and dose 
+names(ToothGrowth) 
+
+
+## Exploring the Selected DataSet
+
+#printing top few values of the selected data set (only 6 values)
+head(ToothGrowth)
+
+#printing last 10 rows of selected data set 
+tail(ToothGrowth, n=10)
+
+#This is a data frame with 60 observations on 3 variables meaning 60 rows (tooths) 3 cols (variables) (Printing Both rows and cols)
+dim(ToothGrowth)
+
+# Printing Dimensions another time
+print(dim(ToothGrowth)) 
+
+#60 tooths(obs) (Printing Only row) of the selected data set
+nrow(ToothGrowth)
+
+#3 variables (Printing Only cols) of the selected data set
+ncol(ToothGrowth) 
+
+#Categorical Data (variables) of the selected data set
+ToothGrowth$supp
+
+#Converting  categorical data to numeric data of the selected data set
+as.numeric(ToothGrowth$supp) 
+
+
+##Data Summarization
+
+#Summarizing structure of data set 
+#The selected data set has 60 observations and 3 types of variables in the data set 1. len (numeric) - Tooth length 2. supp (factor) - Supplement type (VC or OJ) 3. dose (numeric) - Dose in milligrams
+str(ToothGrowth)
+
+# Summarizing 
+#that tooth lenght is dependent variable , we have for the independent variables, supplement type and dosage The response is the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with each of two delivery #methods (orange juice or ascorbic acid).
+table(ToothGrowth$supp,ToothGrowth$dose) 
+
+#Summary for all the variables of the data set
+#The summary confirms that the supp and dose can be treated as factors. We can see that len ranges from 4.20 to 33.90. 
+summary(ToothGrowth)
+
+
+## Data Visualization
+
+
+attach(ToothGrowth)
+#install.packages("ggplot2") ## Loading required package: ggplot2
+
+
+#Doing box plot of tooth length broken down by supplement type and dosage'
+require(ggplot2)
+ggplot(ToothGrowth, aes(x=factor(dose), y=len, fill=supp)) +  
+  geom_boxplot() +
+  ggtitle('Tooth Length by Supplement Type and Dosage') +
+  xlab('Dosage (mgs)') +
+  ylab('Tooth Length (mm)') +
+  guides(fill=guide_legend(title='Supplement Type'))
+
+
+#Doing Scatter plot tooth length broken by dose
+plot(len ~ dose , col="Blue")
+
+
+#Doing Simple boxplot of tooth length broken down by supplement type and dosage
+boxplot(len ~ dose , main="Tooth Lenght According to Different Doses", col = "thistle1")
+
+
+#separate the data set by delivery method
+vctooth <- ToothGrowth[1:30, c(3,1)]
+ojtooth <- ToothGrowth[31:60, c(3,1)]
+
+#histograms of length for the two delivery methods:
+hist(vctooth$len,
+     breaks="Sturges",
+     border="yellow",
+     font=2,
+     lwd=5,
+     cex=1.5,
+     ylim=c(0,10),
+     main = 'Length of Tooth Growth \n Delivery Method: Ascorbic Acid', 
+     xlab="Length of Growth",
+     ylab="Frequency", 
+     col="red",
+     col.main="darkred",
+     col.lab="darkred",
+     col.axis="darkred")
+
+hist(ojtooth$len,
+     breaks="Sturges",
+     border="red",
+     font=2,
+     lwd=5,
+     cex=1.5,
+     ylim=c(0,10),
+     main = 'Length of Tooth Growth \n Delivery Method: Orange Juice', 
+     xlab="Length of Growth",
+     ylab="Frequency", 
+     col="orange",
+     col.main="darkorange",
+     col.lab="darkorange")
+
+
+#breakdowns of length by dose for each delivery method
+plot(vctooth,
+     main = 'Length of Growth by Dosage \n Delivery Method: Ascorbic Acid', 
+     xlab="Dosage Level",
+     ylab="Length",
+     lwd=4,
+     pch=16,
+     font=2,
+     col="red",
+     col.main="darkred",
+     col.lab="darkred",
+     col.axis="darkred")
+
+plot(ojtooth, 
+     main = 'Length of Growth by Dosage \n Delivery Method: Orange Juice', 
+     xlab="Dosage Level",
+     ylab="Length",
+     lwd=5,
+     pch=16,
+     font=2,
+     col="orange",
+     col.main="darkorange",
+     col.lab="darkorange",
+     col.axis="darkorange")
+
+
+
+#box plots for length by dosage level regardless of delivery method:
+plot(len ~ as.factor(dose),
+     col=c("bisque1","lightgreen","tan"),
+     xlab="Dosage Level",
+     border="steelblue3",
+     lwd=0.8,
+     ylab="Length",
+     col.lab="steelblue",
+     col.axis="steelblue",
+     col.main="steelblue",
+     main="Length of Growth by Dosage \n Combined Delivery Methods",
+     data=ToothGrowth)
+
+#All the Above PLots are showing that :
+
+#For 2.0 mg dosage, there appears to be no difference between OJ and VC.
+#For 1.0 mg dosage, OJ definitely appears to promote higher tooth growth that VC
+#For 0.5 mg dosage, OJ appears to promote higher tooth growth than VC.,dosage, as the "dosage increases the tooth growth increases". In the specific case of the VC, the tooth growth has a linear relationship with dosage. The higher dosage (2.0mg) has less improvement in tooth growth with the OJ supplement. However, the OJ supplement generally induces more tooth growth than VC except at higher dosage (2.0 mg).
+
+
+
+
+##Correlation
+
+
+# install.packages("corrplot") installing required pakage
+
+sapply(ToothGrowth, is.numeric)
+library(corrplot)
+
+  cor(ToothGrowth[, unlist(lapply(ToothGrowth, is.numeric))])
+  cor.mat.ToothGrowth = cor(ToothGrowth[, unlist(lapply(ToothGrowth, is.numeric))])
+corrplot(cor.mat.ToothGrowth)
+
+#From the plot we have concluded that:
+#There obvious correlation between dose and length of the teeth. 
+#"Larger dose results in larger tooth length, high and positive correlation
+# there seems to be a positive correlation between dose and length. 2- Orange juice seems more effective than Ascorbic Acid with low (0.5) and medium (1.0) doses. 3- With high doses (2.0), the median length is identical with OJ and VC. 4- There seems to be a decreasing effectivity of Orange Juice: if we check the median length, the increment of length from 0.5 to 1.0 is greater than the increment from 1.0 to 2.0). This attenuation effect is not observed in the case of the ascorbic acid.
+
+
+##Confidence Interval 
+
+
+
+# install.packages("Rmisc") installing required pakage
+library(Rmisc)
+
+CI(ToothGrowth$dose, ci = 0.95)
+# mean value lie in between the the upper and lower class interval which indicates accept the null hypothesis and  mean is not significantly different from 1.16, not different from 0 
+
+CI(ToothGrowth$len , ci = 0.95) 
+# mean value lie in between the the upper and lower class interval which indicates accept the null hypothesis and  mean is not significantly different from 18.81, not different from 0 
+
+
+##Visualization
+#The chart below shows the distribution of tooth lengths. It seems to be somewhat normally distributed
+hist(ToothGrowth$len)
+
+
+##Hypothesis Testing
+
+#install.packages("stats19") installing required pakage
+library(stats19)
+
+
+# One sample t-test
+
+# to test: Is the mean value of dose differ from 1.167 or not?
+t.test(mtcars$mpg, mu =1.167 ) 
+t.test(mtcars$mpg, mu = 1.167, alternative = 'greater')
+#answer p value is less than 0.05 so null hypothesis is rejected
+#In this case the 95% confidence intervals is zero, therefore we  the null hypothesis: the mean values of the lengths per doses are not equal. 
+
+
+
+# Two sample t-test for two independent samples
+
+t.test(ToothGrowth$len, mu = 18.81) 
+#answer:First this is two tail test after this the mean value of weights differs from 18.81,and p value is more than 0.05 so null hypothesis is accepted
+#In this case the 95% confidence intervals is zero, therefore we fail to reject the null hypothesis: the mean values of the lengths per doses are equal. 
+
+
+t.test( ToothGrowth$len, ToothGrowth$dose)
+#significantly different , both sides are positive and also p value is less than 0.05, alternative hypothesis is true
+
+#Visualization
+boxplot(ToothGrowth$len ~ ToothGrowth$dose, main="Comparing Tooth Length Across Three Doses", xlab="Doses", ylab="Tooth Length")
+
+
+t.test(len ~ as.numeric(supp), data=ToothGrowth)
+# The boxplot shows that the median legth of teeth for the OJ delivery method is slightly higher than that for the VC method the p-value of the T-test is 0.06, which means this is higher than the 5% probability accepted for the 95% confidence interval. In addition, the confidence interval of the difference between the two means is -0.1710156 to 7.5710156, which (slightly) touches the zero. Which indicate that we fail to accept the null hypothesis
+
+#Visualization
+boxplot(ToothGrowth$len ~ ToothGrowth$supp, main="Comparing Tooth Length Across Two Supplements", xlab="Supplement", ylab="Tooth Length")
+```
+
+##Chi - square Test
+
+
+#apply the Chi-Square test to see test of association/ independence.
+
+chisq.test(ToothGrowth$len,ToothGrowth$dose)
+#we have x-squared = 92.5 ,Since we get a p-Value greater than the significance level of 0.05, we accept the null hypothesis and conclude that the two variables are in fact independent and not accociated with eachother
+
+#Creates a new variable Treat with 6 levels
+ToothGrowth$Treat=with(ToothGrowth,interaction(supp,dose))
+
+chisq.test(ToothGrowth$len , ToothGrowth$Treat)
+#we have x-squared = 223 ,Since we get a p-Value greater than the significance level of 0.05, we accept the null hypothesis and conclude that the two variables are in fact independent and not accociated with eachother
+
+chisq.test(ToothGrowth$len,ToothGrowth$supp) 
+#we have x-squared = 39.667 ,Since we get a p-Value greater than the significance level of 0.05, we accept the null hypothesis and conclude that the two variables are in fact independent and not accociated with eachother
+
+##Warning Reason
+#It gave the warning because many of the expected values will be very small and therefore the approximations of p may not be right.
+
+##Wrong p- values
+# Here the p approximation  is incorrect because the lenght the teeth is highly dependent on both dose and supplements 
+
+##Showing the tooth lenght dependency on tooth doasage and supplement
+qplot(supp,len,data=ToothGrowth, facets=~dose, main="Tooth growth of guinea pigs by supplement type and dosage (mg)",xlab="Supplement type", ylab="Tooth length") + geom_boxplot(aes(fill = supp))
+#length is highly dependent on supplement and dosage 
+#dosage, as the dosage increases the tooth growth increases. In the specific case of the VC, the tooth growth has a linear relationship with dosage. The higher dossage (2.0mg) has less improvement in tooth growth with the OJ supplement. However, the OJ supplement generally induces more tooth growth than VC except at higher dosage (2.0 mg).
+
+## Analysis of Variance
+
+attach(ToothGrowth)
+
+#Question: Does all the groups have the same population mean and use a 5% significance level.?
+
+##Hypothesis Testing
+# null hypothesis  H0: ??VC0.5 = ??OJ1 = ??VC1 = ??OJ2 = ??VC2 = 0 
+# alternative hypothesis HA: Not all ??j equal 0.
+
+
+#ONE WAY Anova
+
+boxplot(len ~ supp, col= rainbow(5))
+model1 <- aov(len ~ supp )
+summary(model1)
+##Observation
+#The p value for the one way ANOVA of len by supp is 0.0604 which is greater than 0.05, we fail to reject the null hypothesis that ??1=??2 at ??=0.05. By itself, supplement type (OJ vs. VC) appears to have no significant impact on tooth length.
+
+##For F-value
+
+#Finding permuted f-statistics to compare
+Tobs <- anova(lm(len ~ supp ))[1,4]; Tobs 
+#found that the permuted F-statistics, F*, were less than the observed F-statistic of 3.6682 So fail to reject the null hypothesis 
+
+boxplot(len ~ dose, col= rainbow(5))
+model2 <- aov(len ~ dose)
+summary(model2)
+##Observation
+#The p value for the one way ANOVA of len by dose is 1.23e-14 which is less than 0.05, reject the null hypothesis that ??1=??2 at ??=0.05. means that differences in dosage are associated with different levels of tooth growth 
+#"larger doses are associated with increased tooth growth.
+
+##For F-value
+#Finding permuted f-statistics to compare
+Tobs <- anova(lm(len ~ dose,data=ToothGrowth))[1,4]; Tobs 
+#found that none of the permuted F-statistics, F*, were larger than the observed F-statistic of 105.06 so reject the null hypothesis
+
+
+
+##Two- Way Anova
+#Creates a new variable Treat with 6 levels
+ToothGrowth$Treat=with(ToothGrowth,interaction(supp,dose)) 
+
+
+boxplot(ToothGrowth$len ~ ToothGrowth$Treat, col= rainbow(5))
+model3 <- aov(ToothGrowth$len ~ ToothGrowth$Treat)
+summary(model3)
+##Observation
+#here is accociation between tooth lenght and tooth treatment
+#Giving guinea pigs orange juice had a greater impact on tooth growth than giving them ascorbic acid.
+#Reject H0 since the p-value is less than 5%.The permutation p-value was reported as 0, means all the group dose not have the same poopulation mean 
+
+##For F-value
+
+#Finding permuted f-statistics to compare
+Tobs <- anova(lm(len~Treat,data=ToothGrowth))[1,4]; Tobs 
+#found that none of the permuted F-statistics, F*, were larger than the observed F-statistic of 41.56 so Reject the null hypothesis
+
+
+
+## Linear and Multiple Regression Models
+
+
+attach(ToothGrowth)
+##Linear Regression
+lm_1 = lm(len ~ dose, ToothGrowth)
+summary(lm_1) 
+# lm name of the model
+# p- value for intercept is less than 0.05 which means intercept is significant with this model
+# dose has a very significant effect on tooth length as p value is less than 0.05
+# positive relation more dose more length
+# e= 4.60
+# r squared for correlation
+#f stats value showing that the value for regulation model is very good (both have same p value )...only one x var and one y varable so both p values are same
+
+#Visualization
+plot(len ~ dose , col = "Blue")
+#From the graph we can observe a clear positive correlation between the tooth length and the dose
+
+
+##Multiple Regresiion
+fit <- lm(len ~ dose + supp, data=ToothGrowth)
+summary(fit)
+#len dependent and dose and supp independent
+# lm name of the model
+# p- value for intercept is less than 0.05 which means intercept is significant with this model
+# supp vc has less significant effect on tooth length as compare to the dose it has more significant effect
+# positive relation more dose more length
+#negative relation with sup more supp less len
+# e= 4.236
+# r = 0.83.8 means 84% correlation between depent len all the independent variable
+#f stats value showing that the value for regulation model is very good (both have same p value )...only one x var and one y varable so both p values are same
+
+#The model explains 70% of the variance in the data. The intercept is 9.2725, meaning that with no supplement of Vitamin C, the average tooth length is 9.2725 units. The coefficient of dose is 9.7636. It can be interpreted as increasing the delievered dose 1 mg, all else equal (i.e. no change in the supplement type), would increase the tooth length 9.7636 units. The last coefficient is for the supplement type. Since the supplement type is a categorical variable, dummy variables are used. The computed coefficient is for suppVC and the value is -3.7 meaning that delivering a given dose as ascorbic acid, without changing the dose, would result in 3.7 units of decrease in the tooth length. Since there are only two categories, we can also conclude that on average, delivering the dosage as orange juice would increase the tooth length by 3.7 units.
+
+#Visualization
+library(ggplot2)
+
+ggplot(data=ToothGrowth, aes(x=as.factor(dose), y=len, fill=supp)) +
+    geom_bar(stat="identity",) +
+    facet_grid(. ~ supp) +
+    xlab("Dose in miligrams") +
+    ylab("Tooth length") +
+    guides(fill=guide_legend(title="Supplement type"))
+#From the graph we can observe a clear positive correlation between the tooth length and the dose levels of Vitamin C, for both delivery methods
+
+
